@@ -5,12 +5,21 @@ let alleLinks = document.querySelectorAll("nav a");
 let alleSecties = document.querySelectorAll("section");
 
 // We maken onze instellingen aan voor onze observer.
-const opties = {};
+const opties = {
+    rootMargin: "-150px",
+    treshold: 1.0
+};
 
 // We maken een doorsnijde aan voor onze observer.
 const verwerkDoorsnijding = (entries, observer) => {
     entries.forEach(entry => {
-        console.log(`${entry.target}: Doorsnijdt - ${entry.isIntersecting}`);
+        // ! For DEBUG use only.
+        // console.log(`${entry.target.id}: Doorsnijdt - ${entry.isIntersecting}`);
+
+        if(entry.isIntersecting) {
+            let link = zoekBijpassendeLink(`#${entry.target.id}`);
+            maakActief(link);
+        }
     });
 }
 
@@ -18,7 +27,9 @@ const verwerkDoorsnijding = (entries, observer) => {
 let observer = new IntersectionObserver(verwerkDoorsnijding, opties);
 
 // We zorgen dat de observer naar de eerste sectie gaat kijken.
-observer.observe(alleSecties[1]);
+alleSecties.forEach(sectie => {
+    observer.observe(sectie);
+});
 
 // Een functie maken die de "active" class weghaalt als deze niet meer actief is.
 const verwijderActief = () => {
@@ -42,3 +53,9 @@ alleLinks.forEach((link) => {
      window.location = e.target.href;
     });
 });
+
+// Een functie maken die de passende link opzoekt.
+const zoekBijpassendeLink = (id) => {
+    let link = document.querySelector(`nav a[href="${id}"]`);
+    return link;
+}
